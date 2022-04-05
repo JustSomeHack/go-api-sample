@@ -2,10 +2,13 @@ package main
 
 import "fmt"
 
-func main() {
+var version string = "development"
 
+func main() {
+	printVersion()
+	
 }
 
-func printMessage(message string) {
-	fmt.Println(message)
+func printVersion() {
+	fmt.Printf("Starting go-api-sample %s\n\n", version)
 }

@@ -1,23 +1,20 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
-func Test_printMessage(t *testing.T) {
-	type args struct {
-		message string
-	}
+func Test_printVersion(t *testing.T) {
 	tests := []struct {
 		name string
-		args args
 	}{
 		{
-			name: "Sample Test",
-			args: args{message: "Test"},
+			name: "Should print version of application",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			printMessage(tt.args.message)
+			printVersion()
 		})
 	}
 }
