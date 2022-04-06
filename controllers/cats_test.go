@@ -1,12 +1,14 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
 	"testing"
 
+	"github.com/JustSomeHack/go-api-sample/models"
 	"github.com/JustSomeHack/go-api-sample/tests"
 	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
@@ -72,6 +74,112 @@ func TestCatsDelete(t *testing.T) {
 
 		if !reflect.DeepEqual(tt.wantResponse, w.Body.String()) {
 			t.Errorf("HealthGet() error = %v, wantCode %v", w.Body.String(), tt.wantResponse)
+		}
+	}
+}
+
+func TestCatsGet(t *testing.T) {
+	teardownTests := tests.SetupTests(t, postgres.Open(connectionString))
+	defer teardownTests(t)
+
+	router, err := SetupRouter(tests.DB)
+	if err != nil {
+		panic(err)
+	}
+
+	type args struct {
+		method   string
+		endpoint string
+		body     interface{}
+	}
+	tests := []struct {
+		name      string
+		args      args
+		wantCount int
+		wantCode  int
+	}{
+		{
+			name: "Should all cats",
+			args: args{
+				method:   "GET",
+				endpoint: "/cats",
+				body:     nil},
+			wantCount: len(tests.Cats),
+			wantCode:  http.StatusOK,
+		},
+	}
+	for _, tt := range tests {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(tt.args.method, tt.args.endpoint, nil)
+		router.ServeHTTP(w, req)
+
+		if tt.wantCode != w.Code {
+			t.Errorf("CatsGet() error = %v, wantCode %v", w.Code, tt.wantCode)
+			return
+		}
+
+		cats := make([]models.Cat, 0)
+		err := json.Unmarshal(w.Body.Bytes(), &cats)
+		if err != nil {
+			t.Errorf("CatsGet() error = %v, wantCount %v", err, tt.wantCount)
+			return
+		}
+
+		if tt.wantCount != len(cats) {
+			t.Errorf("CatsGet() error = %v, wantCount %v", len(cats), tt.wantCount)
+		}
+	}
+}
+
+func TestCatsGetOne(t *testing.T) {
+	teardownTests := tests.SetupTests(t, postgres.Open(connectionString))
+	defer teardownTests(t)
+
+	router, err := SetupRouter(tests.DB)
+	if err != nil {
+		panic(err)
+	}
+
+	type args struct {
+		method   string
+		endpoint string
+		body     interface{}
+	}
+	tests := []struct {
+		name         string
+		args         args
+		wantResponse *models.Cat
+		wantCode     int
+	}{
+		{
+			name: "Should get a cat by ID",
+			args: args{
+				method:   "GET",
+				endpoint: fmt.Sprintf("/cats/%s", tests.Cats[0].ID.String()),
+				body:     nil},
+			wantResponse: &tests.Cats[0],
+			wantCode:     http.StatusOK,
+		},
+	}
+	for _, tt := range tests {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(tt.args.method, tt.args.endpoint, nil)
+		router.ServeHTTP(w, req)
+
+		if tt.wantCode != w.Code {
+			t.Errorf("CatsGetOne() error = %v, wantCode %v", w.Code, tt.wantCode)
+			return
+		}
+
+		cat := new(models.Cat)
+		err := json.Unmarshal(w.Body.Bytes(), &cat)
+		if err != nil {
+			t.Errorf("CatsGet() error = %v, wantCount %v", err, tt.wantResponse)
+			return
+		}
+
+		if !reflect.DeepEqual(tt.wantResponse.ID, cat.ID) {
+			t.Errorf("CatsGetOne() error = %v, wantCode %v", cat, tt.wantResponse)
 		}
 	}
 }

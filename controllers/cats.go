@@ -33,11 +33,33 @@ func CatsCount(c *gin.Context) {
 }
 
 func CatsGet(c *gin.Context) {
-
+	cats, err := catsService.Get(c.Request.Context(), nil)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"message": "there was an error",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, cats)
 }
 
 func CatsGetOne(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": "invalid id",
+		})
+		return
+	}
 
+	cat, err := catsService.GetOne(c.Request.Context(), id)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"message": "there was an error",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, cat)
 }
 
 func CatsPost(c *gin.Context) {

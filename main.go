@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/JustSomeHack/go-api-sample/controllers"
+	"github.com/JustSomeHack/go-api-sample/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -43,5 +44,10 @@ func setupDatabase(connectionString string) *gorm.DB {
 	if err != nil {
 		panic(fmt.Sprintf("unable to connect to database: %v", err))
 	}
+
+	if err := db.AutoMigrate(&models.Cat{}, &models.Dog{}); err != nil {
+		panic(err)
+	}
+
 	return db
 }
