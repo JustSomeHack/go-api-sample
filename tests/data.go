@@ -16,45 +16,30 @@ var DB *gorm.DB
 var Cats []models.Cat
 var Dogs []models.Dog
 
-var runCount = 0
-
 func SetupTests(t testing.TB, dialector gorm.Dialector) func(t testing.TB) {
-	runCount = runCount + 1
-	if runCount == 1 {
-		var err error
+	var err error
 
-		DB, err = gorm.Open(dialector)
-		if err != nil {
-			panic(err)
-		}
+	DB, err = gorm.Open(dialector)
+	if err != nil {
+		panic(err)
+	}
 
-		if err := DB.AutoMigrate(&models.Cat{}, &models.Dog{}); err != nil {
-			panic(err)
-		}
+	if err := DB.AutoMigrate(&models.Cat{}, &models.Dog{}); err != nil {
+		panic(err)
+	}
 
-		LoadCats()
-		if err := DB.Create(Cats).Error; err != nil {
-			panic(err)
-		}
+	LoadCats()
+	if err := DB.Create(Cats).Error; err != nil {
+		panic(err)
+	}
 
-		LoadDogs()
-		if err := DB.Create(Dogs).Error; err != nil {
-			panic(err)
-		}
+	LoadDogs()
+	if err := DB.Create(Dogs).Error; err != nil {
+		panic(err)
 	}
 
 	return func(t testing.TB) {
-		runCount = runCount - 1
-		if runCount == 0 {
-			DB.Migrator().DropTable(&models.Cat{})
-			DB.Migrator().DropTable(&models.Dog{})
-
-			sqlDB, err := DB.DB()
-			if err != nil {
-				panic(err)
-			}
-			sqlDB.Close()
-		}
+		DB.Migrator().DropTable(&models.Cat{}, &models.Dog{})
 	}
 }
 
