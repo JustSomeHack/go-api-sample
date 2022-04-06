@@ -10,11 +10,12 @@ import (
 	"github.com/JustSomeHack/go-api-sample/tests"
 
 	"github.com/google/uuid"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 func Test_catsService_Add(t *testing.T) {
-	teardownTests := tests.SetupTests(t)
+	teardownTests := tests.SetupTests(t, sqlite.Open("../test.db"))
 	defer teardownTests(t)
 
 	catID := uuid.New()
@@ -81,7 +82,7 @@ func Test_catsService_Add(t *testing.T) {
 }
 
 func Test_catsService_Delete(t *testing.T) {
-	teardownTests := tests.SetupTests(t)
+	teardownTests := tests.SetupTests(t, sqlite.Open("../test.db"))
 	defer teardownTests(t)
 
 	type fields struct {
@@ -123,7 +124,7 @@ func Test_catsService_Delete(t *testing.T) {
 }
 
 func Test_catsService_Get(t *testing.T) {
-	teardownTests := tests.SetupTests(t)
+	teardownTests := tests.SetupTests(t, sqlite.Open("../test.db"))
 	defer teardownTests(t)
 
 	type fields struct {
@@ -166,7 +167,7 @@ func Test_catsService_Get(t *testing.T) {
 }
 
 func Test_catsService_GetOne(t *testing.T) {
-	teardownTests := tests.SetupTests(t)
+	teardownTests := tests.SetupTests(t, sqlite.Open("../test.db"))
 	defer teardownTests(t)
 
 	type fields struct {
@@ -216,7 +217,7 @@ func Test_catsService_GetOne(t *testing.T) {
 }
 
 func Test_catsService_Update(t *testing.T) {
-	teardownTests := tests.SetupTests(t)
+	teardownTests := tests.SetupTests(t, sqlite.Open("../test.db"))
 	defer teardownTests(t)
 
 	type fields struct {

@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/JustSomeHack/go-api-sample/models"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
@@ -15,12 +14,14 @@ var DB *gorm.DB
 var Cats []models.Cat
 var Dogs []models.Dog
 
-func SetupTests(t testing.TB) func(t testing.TB) {
-	os.Remove("../test.db")
+func SetupTests(t testing.TB, dialector gorm.Dialector) func(t testing.TB) {
+	if _, err := os.Stat("../test.db"); err == nil {
+		os.Remove("../test.db")
+	}
 
 	var err error
 
-	DB, err = gorm.Open(sqlite.Open("../test.db"))
+	DB, err = gorm.Open(dialector)
 	if err != nil {
 		panic(err)
 	}
@@ -40,7 +41,12 @@ func SetupTests(t testing.TB) func(t testing.TB) {
 	}
 
 	return func(t testing.TB) {
-		os.Remove("../test.db")
+		DB.Migrator().DropTable(&models.Cat{})
+		DB.Migrator().DropTable(&models.Dog{})
+
+		if _, err := os.Stat("../test.db"); err == nil {
+			os.Remove("../test.db")
+		}
 	}
 }
 

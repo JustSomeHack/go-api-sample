@@ -1,18 +1,18 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
 	"testing"
 
 	"github.com/JustSomeHack/go-api-sample/tests"
+	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 )
 
-var connectionString = "postgresql://root@cockroachdb:26257/defaultdb?sslmode=disable"
-
-func TestHealthGet(t *testing.T) {
+func TestDogsDelete(t *testing.T) {
 	teardownTests := tests.SetupTests(t, postgres.Open(connectionString))
 	defer teardownTests(t)
 
@@ -33,10 +33,31 @@ func TestHealthGet(t *testing.T) {
 		wantCode     int
 	}{
 		{
-			name:         "Should pass health check",
-			args:         args{method: "GET", endpoint: "/health", body: nil},
-			wantResponse: "{\"message\":\"ok\"}",
+			name: "Should delete a dog by ID",
+			args: args{
+				method:   "DELETE",
+				endpoint: fmt.Sprintf("/dogs/%s", tests.Dogs[0].ID.String()),
+				body:     nil},
+			wantResponse: fmt.Sprintf("{\"deleted\":\"%s\"}", tests.Dogs[0].ID.String()),
 			wantCode:     http.StatusOK,
+		},
+		{
+			name: "Should not delete an invalid ID",
+			args: args{
+				method:   "DELETE",
+				endpoint: fmt.Sprintf("/dogs/%s", "not_a_valid_id"),
+				body:     nil},
+			wantResponse: "{\"message\":\"invalid id\"}",
+			wantCode:     http.StatusBadRequest,
+		},
+		{
+			name: "Should not delete an ID that does not exist",
+			args: args{
+				method:   "DELETE",
+				endpoint: fmt.Sprintf("/dogs/%s", uuid.New().String()),
+				body:     nil},
+			wantResponse: "{\"message\":\"there was an error\"}",
+			wantCode:     http.StatusInternalServerError,
 		},
 	}
 	for _, tt := range tests {
