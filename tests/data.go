@@ -26,6 +26,9 @@ func SetupTests(t testing.TB, dialector gorm.Dialector) func(t testing.TB) {
 		panic(err)
 	}
 
+	DB.Migrator().DropTable(&models.Cat{})
+	DB.Migrator().DropTable(&models.Dog{})
+
 	if err := DB.AutoMigrate(&models.Cat{}, &models.Dog{}); err != nil {
 		panic(err)
 	}
