@@ -8,11 +8,37 @@ import (
 
 	"github.com/JustSomeHack/go-api-sample/models"
 	"github.com/JustSomeHack/go-api-sample/tests"
-
 	"github.com/google/uuid"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
+
+func TestNewCatsService(t *testing.T) {
+	teardownTests := tests.SetupTests(t, sqlite.Open("../test.db"))
+	defer teardownTests(t)
+
+	type args struct {
+		db *gorm.DB
+	}
+	tests := []struct {
+		name string
+		args args
+		want CatsService
+	}{
+		{
+			name: "Should get valid interface back",
+			args: args{db: tests.DB},
+			want: &catsService{db: tests.DB},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewCatsService(tt.args.db); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewCatsService() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
 
 func Test_catsService_Add(t *testing.T) {
 	teardownTests := tests.SetupTests(t, sqlite.Open("../test.db"))

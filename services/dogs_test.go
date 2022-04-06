@@ -14,6 +14,33 @@ import (
 	"gorm.io/gorm"
 )
 
+func TestNewDogsService(t *testing.T) {
+	teardownTests := tests.SetupTests(t, sqlite.Open("../test.db"))
+	defer teardownTests(t)
+
+	type args struct {
+		db *gorm.DB
+	}
+	tests := []struct {
+		name string
+		args args
+		want DogsService
+	}{
+		{
+			name: "Should get valid interface back",
+			args: args{db: tests.DB},
+			want: &dogsService{db: tests.DB},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewDogsService(tt.args.db); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewDogsService() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func Test_dogsService_Add(t *testing.T) {
 	teardownTests := tests.SetupTests(t, sqlite.Open("../test.db"))
 	defer teardownTests(t)
