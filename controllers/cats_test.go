@@ -160,6 +160,15 @@ func TestCatsGetOne(t *testing.T) {
 			wantResponse: &tests.Cats[0],
 			wantCode:     http.StatusOK,
 		},
+		{
+			name: "Should not get an invalid ID",
+			args: args{
+				method:   "GET",
+				endpoint: fmt.Sprintf("/cats/%s", "not_a_valid_id"),
+				body:     nil},
+			wantResponse: nil,
+			wantCode:     http.StatusBadRequest,
+		},
 	}
 	for _, tt := range tests {
 		w := httptest.NewRecorder()
@@ -171,15 +180,17 @@ func TestCatsGetOne(t *testing.T) {
 			return
 		}
 
-		cat := new(models.Cat)
-		err := json.Unmarshal(w.Body.Bytes(), &cat)
-		if err != nil {
-			t.Errorf("CatsGet() error = %v, wantCount %v", err, tt.wantResponse)
-			return
-		}
+		if tt.wantResponse != nil {
+			cat := new(models.Cat)
+			err := json.Unmarshal(w.Body.Bytes(), &cat)
+			if err != nil {
+				t.Errorf("CatsGet() error = %v, wantCount %v", err, tt.wantResponse)
+				return
+			}
 
-		if !reflect.DeepEqual(tt.wantResponse.ID, cat.ID) {
-			t.Errorf("CatsGetOne() error = %v, wantCode %v", cat, tt.wantResponse)
+			if !reflect.DeepEqual(tt.wantResponse.ID, cat.ID) {
+				t.Errorf("CatsGetOne() error = %v, wantCode %v", cat, tt.wantResponse)
+			}
 		}
 	}
 }
