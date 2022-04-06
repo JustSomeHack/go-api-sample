@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
+	"github.com/JustSomeHack/go-api-sample/models"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -63,9 +65,54 @@ func CatsGetOne(c *gin.Context) {
 }
 
 func CatsPost(c *gin.Context) {
+	cat := new(models.Cat)
+	if c.ShouldBind(cat) != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": "Bad request body",
+		})
+		return
+	}
 
+	if cat.ID == uuid.Nil {
+		cat.ID = uuid.New()
+	}
+
+	id, err := catsService.Add(c.Request.Context(), cat)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"message": "there was an error",
+		})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{
+		"message": fmt.Sprintf("id %s created", id.String()),
+	})
 }
 
 func CatsPut(c *gin.Context) {
+	cat := new(models.Cat)
+	if c.ShouldBind(&cat) != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": "Bad request body",
+		})
+		return
+	}
 
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"message": "invalid id",
+		})
+		return
+	}
+
+	if err := catsService.Update(c.Request.Context(), id, cat); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"message": "there was an error",
+		})
+		return
+	}
+	c.JSON(http.StatusAccepted, gin.H{
+		"message": fmt.Sprintf("id %s updated", id.String()),
+	})
 }

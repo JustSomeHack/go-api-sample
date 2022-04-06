@@ -9,12 +9,12 @@ import (
 	"github.com/JustSomeHack/go-api-sample/models"
 	"github.com/JustSomeHack/go-api-sample/tests"
 	"github.com/google/uuid"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func TestNewCatsService(t *testing.T) {
-	teardownTests := tests.SetupTests(t, sqlite.Open("../test.db"))
+	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 
 	type args struct {
@@ -41,7 +41,7 @@ func TestNewCatsService(t *testing.T) {
 }
 
 func Test_catsService_Add(t *testing.T) {
-	teardownTests := tests.SetupTests(t, sqlite.Open("../test.db"))
+	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 
 	catID := uuid.New()
@@ -108,7 +108,7 @@ func Test_catsService_Add(t *testing.T) {
 }
 
 func Test_catsService_Delete(t *testing.T) {
-	teardownTests := tests.SetupTests(t, sqlite.Open("../test.db"))
+	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 
 	type fields struct {
@@ -150,7 +150,7 @@ func Test_catsService_Delete(t *testing.T) {
 }
 
 func Test_catsService_Get(t *testing.T) {
-	teardownTests := tests.SetupTests(t, sqlite.Open("../test.db"))
+	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 
 	type fields struct {
@@ -193,7 +193,7 @@ func Test_catsService_Get(t *testing.T) {
 }
 
 func Test_catsService_GetOne(t *testing.T) {
-	teardownTests := tests.SetupTests(t, sqlite.Open("../test.db"))
+	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 
 	type fields struct {
@@ -235,15 +235,18 @@ func Test_catsService_GetOne(t *testing.T) {
 				t.Errorf("catsService.GetOne() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("catsService.GetOne() = %v, want %v", got, tt.want)
+
+			if !tt.wantErr {
+				if !reflect.DeepEqual(got.ID, tt.want.ID) {
+					t.Errorf("catsService.GetOne() = %v, want %v", got, tt.want)
+				}
 			}
 		})
 	}
 }
 
 func Test_catsService_Update(t *testing.T) {
-	teardownTests := tests.SetupTests(t, sqlite.Open("../test.db"))
+	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 
 	type fields struct {

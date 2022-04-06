@@ -9,6 +9,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var ConnectionString = "postgresql://root@cockroachdb:26257/defaultdb?sslmode=disable"
+
 var DB *gorm.DB
 
 var Cats []models.Cat

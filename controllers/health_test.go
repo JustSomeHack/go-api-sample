@@ -10,10 +10,8 @@ import (
 	"gorm.io/driver/postgres"
 )
 
-var connectionString = "postgresql://root@cockroachdb:26257/defaultdb?sslmode=disable"
-
 func TestHealthGet(t *testing.T) {
-	teardownTests := tests.SetupTests(t, postgres.Open(connectionString))
+	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 
 	router, err := SetupRouter(tests.DB)

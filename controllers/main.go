@@ -34,7 +34,7 @@ func SetupRouter(db *gorm.DB) (*gin.Engine, error) {
 		cats.GET("", CatsGet)
 		cats.GET("/:id", CatsGetOne)
 		cats.POST("", CatsPost)
-		cats.PUT("", CatsPut)
+		cats.PUT("/:id", CatsPut)
 	}
 
 	dogs := router.Group("/dogs")
@@ -44,7 +44,7 @@ func SetupRouter(db *gorm.DB) (*gin.Engine, error) {
 		dogs.GET("", DogsGet)
 		dogs.GET("/:id", DogsGetOne)
 		dogs.POST("", DogsPost)
-		dogs.PUT("", DogsPut)
+		dogs.PUT("/:id", DogsPut)
 	}
 
 	return router, nil
