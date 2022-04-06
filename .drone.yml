@@ -16,7 +16,7 @@ services:
   - name: cockroachdb
     image: cockroachdb/cockroach:latest
     commands:
-      - cockroach start-single-node --insecure
+      - cockroach start-single-node --insecure --advertise-addr=cockroachdb
     
 steps:
   - name: test

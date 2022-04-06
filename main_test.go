@@ -70,7 +70,7 @@ func Test_setupDatabase(t *testing.T) {
 		{
 			name: "Should be able to connect to database",
 			args: args{
-				connectionString: "postgresql://root@10.10.10.10:26257/defaultdb?sslmode=disable",
+				connectionString: "postgresql://root@cockroachdb:26257/defaultdb?sslmode=disable",
 			},
 			wantPanic: false,
 		},
