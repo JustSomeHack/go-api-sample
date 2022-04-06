@@ -22,7 +22,9 @@ steps:
   - name: test
     image: golang:latest
     commands:
-      - go test -coverprofile=coverage.txt ./...
+      - go test -coverprofile=coverage.txt github.com/JustSomeHack/go-api-sample
+      - go test -coverprofile=coverage.txt github.com/JustSomeHack/go-api-sample/controllers
+      - go test -coverprofile=coverage.txt github.com/JustSomeHack/go-api-sample/services
 
   - name: build
     image: golang:latest
