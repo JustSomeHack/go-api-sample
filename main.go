@@ -16,7 +16,14 @@ func main() {
 
 	db := setupDatabase(getConnectionString())
 
-	controllers.SetupServer(db)
+	router, err := controllers.SetupRouter(db)
+	if err != nil {
+		panic(err)
+	}
+
+	if err := router.Run(); err != nil {
+		panic(err)
+	}
 }
 
 func getConnectionString() string {

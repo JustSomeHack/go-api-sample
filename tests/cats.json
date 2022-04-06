@@ -1,0 +1,26 @@
+[
+  {
+    "id": "fb66c72c-ee60-4c9b-9ba6-d0d5102a8c72",
+    "name": "Nacho",
+    "breed": "Tabby",
+    "color": "Orange",
+    "birthdate": "2020-02-10T00:00:00Z",
+    "weight": 17
+  },
+  {
+    "id": "53af6386-67d8-42f3-a735-368d951b9d27",
+    "name": "Captain Marble",
+    "breed": "Main Coon",
+    "color": "Calico",
+    "birthdate": "2020-03-10T00:00:00Z",
+    "weight": 10
+  },
+  {
+    "id": "1e4f304b-48c2-4fc8-a352-d5dd9d32fb1a",
+    "name": "Appa",
+    "breed": "Domestic Shorthair",
+    "color": "White/Gray",
+    "birthdate": "2020-09-19T00:00:00Z",
+    "weight": 19
+  }
+]

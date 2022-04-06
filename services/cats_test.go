@@ -7,12 +7,14 @@ import (
 	"time"
 
 	"github.com/JustSomeHack/go-api-sample/models"
+	"github.com/JustSomeHack/go-api-sample/tests"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 func Test_catsService_Add(t *testing.T) {
-	teardownTests := setupTests(t)
+	teardownTests := tests.SetupTests(t)
 	defer teardownTests(t)
 
 	catID := uuid.New()
@@ -33,7 +35,7 @@ func Test_catsService_Add(t *testing.T) {
 	}{
 		{
 			name:   "Should add a cat to the database",
-			fields: fields{db: db},
+			fields: fields{db: tests.DB},
 			args: args{
 				ctx: context.Background(),
 				cat: &models.Cat{
@@ -50,7 +52,7 @@ func Test_catsService_Add(t *testing.T) {
 		},
 		{
 			name:   "Should not be able to add empty cat",
-			fields: fields{db: db},
+			fields: fields{db: tests.DB},
 			args: args{
 				ctx: context.Background(),
 				cat: &models.Cat{
@@ -79,7 +81,7 @@ func Test_catsService_Add(t *testing.T) {
 }
 
 func Test_catsService_Delete(t *testing.T) {
-	teardownTests := setupTests(t)
+	teardownTests := tests.SetupTests(t)
 	defer teardownTests(t)
 
 	type fields struct {
@@ -97,13 +99,13 @@ func Test_catsService_Delete(t *testing.T) {
 	}{
 		{
 			name:    "Should delete cat by ID",
-			fields:  fields{db: db},
-			args:    args{ctx: context.Background(), id: cats[0].ID},
+			fields:  fields{db: tests.DB},
+			args:    args{ctx: context.Background(), id: tests.Cats[0].ID},
 			wantErr: false,
 		},
 		{
 			name:    "Should not delete an ID that does not exists",
-			fields:  fields{db: db},
+			fields:  fields{db: tests.DB},
 			args:    args{ctx: context.Background(), id: uuid.New()},
 			wantErr: true,
 		},
@@ -121,7 +123,7 @@ func Test_catsService_Delete(t *testing.T) {
 }
 
 func Test_catsService_Get(t *testing.T) {
-	teardownTests := setupTests(t)
+	teardownTests := tests.SetupTests(t)
 	defer teardownTests(t)
 
 	type fields struct {
@@ -140,7 +142,7 @@ func Test_catsService_Get(t *testing.T) {
 	}{
 		{
 			name:      "Should get all the cats",
-			fields:    fields{db: db},
+			fields:    fields{db: tests.DB},
 			args:      args{ctx: context.Background(), filter: nil},
 			wantCount: 3,
 			wantErr:   false,
@@ -164,7 +166,7 @@ func Test_catsService_Get(t *testing.T) {
 }
 
 func Test_catsService_GetOne(t *testing.T) {
-	teardownTests := setupTests(t)
+	teardownTests := tests.SetupTests(t)
 	defer teardownTests(t)
 
 	type fields struct {
@@ -183,14 +185,14 @@ func Test_catsService_GetOne(t *testing.T) {
 	}{
 		{
 			name:    "Should get cat by ID",
-			fields:  fields{db: db},
-			args:    args{ctx: context.Background(), id: cats[0].ID},
-			want:    &cats[0],
+			fields:  fields{db: tests.DB},
+			args:    args{ctx: context.Background(), id: tests.Cats[0].ID},
+			want:    &tests.Cats[0],
 			wantErr: false,
 		},
 		{
 			name:    "Should not get cat that does not exist",
-			fields:  fields{db: db},
+			fields:  fields{db: tests.DB},
 			args:    args{ctx: context.Background(), id: uuid.New()},
 			want:    nil,
 			wantErr: true,
@@ -214,7 +216,7 @@ func Test_catsService_GetOne(t *testing.T) {
 }
 
 func Test_catsService_Update(t *testing.T) {
-	teardownTests := setupTests(t)
+	teardownTests := tests.SetupTests(t)
 	defer teardownTests(t)
 
 	type fields struct {
@@ -233,8 +235,8 @@ func Test_catsService_Update(t *testing.T) {
 	}{
 		{
 			name:   "Should update a cat by ID",
-			fields: fields{db: db},
-			args: args{ctx: context.Background(), id: cats[0].ID, cat: &models.Cat{
+			fields: fields{db: tests.DB},
+			args: args{ctx: context.Background(), id: tests.Cats[0].ID, cat: &models.Cat{
 				Name:      "Nacho",
 				Breed:     "Tabby",
 				Color:     "Orange",
@@ -245,7 +247,7 @@ func Test_catsService_Update(t *testing.T) {
 		},
 		{
 			name:   "Should not update a cat with no valid ID",
-			fields: fields{db: db},
+			fields: fields{db: tests.DB},
 			args: args{ctx: context.Background(), id: uuid.New(), cat: &models.Cat{
 				Name:      "Nacho",
 				Breed:     "Tabby",

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "9a82381c-651e-4ca3-a935-5d526ee40d67",
+    "name": "0111",
+    "breed": "Pitbull Mix",
+    "color": "White/Brindle",
+    "birthdate": "2007-01-14T00:00:00Z",
+    "weight": 70
+  },
+  {
+    "id": "9a82381c-651e-4ca3-a935-5d526ee40e22",
+    "name": "Pluto",
+    "breed": "Pug",
+    "color": "Fawn",
+    "birthdate": "2010-05-12T00:00:00Z",
+    "weight": 22
+  },
+  {
+    "id": "9a82381c-651e-4ca3-a935-5d526ee40c65",
+    "name": "Snowball",
+    "breed": "Shiba Inu",
+    "color": "Cream",
+    "birthdate": "2020-06-12T00:00:00Z",
+    "weight": 22
+  },
+  {
+    "id": "a355259d-4517-4ac8-8a35-e84d111c4bb9",
+    "name": "Koda",
+    "breed": "Samoyed",
+    "color": "White",
+    "birthdate": "2022-01-28T00:00:00Z",
+    "weight": 5
+  }
+]
