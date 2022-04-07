@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"math/rand"
 	"reflect"
 	"testing"
 	"time"
@@ -13,6 +14,28 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
+
+func BenchmarkDogInserts(b *testing.B) {
+	teardownTests := tests.SetupTests(b, postgres.Open(tests.ConnectionString))
+	defer teardownTests(b)
+
+	dogsService := NewDogsService(tests.DB)
+
+	for i := 0; i < b.N; i++ {
+		dog := &models.Dog{
+			ID:        uuid.New(),
+			Name:      tests.RandString(12),
+			Breed:     tests.RandString(12),
+			Color:     tests.RandString(12),
+			Birthdate: time.Now(),
+			Weight:    rand.Intn(298) + 1,
+		}
+		_, err := dogsService.Add(context.Background(), dog)
+		if err != nil {
+			panic(err)
+		}
+	}
+}
 
 func TestNewDogsService(t *testing.T) {
 	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))

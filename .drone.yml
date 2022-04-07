@@ -24,6 +24,11 @@ steps:
     commands:
       - go test -p 1 -coverprofile=coverage.txt ./...
 
+  - name: benchmark
+    image: golang:latest
+    commands:
+      - cd services && go test -benchmem -bench . && cd ..
+
   - name: build
     image: golang:latest
     environment:

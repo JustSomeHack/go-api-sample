@@ -2,6 +2,7 @@ package tests
 
 import (
 	"encoding/json"
+	"math/rand"
 	"os"
 	"testing"
 
@@ -65,4 +66,14 @@ func LoadDogs() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func RandString(n int) string {
+	const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
 }

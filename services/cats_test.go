@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"math/rand"
 	"reflect"
 	"testing"
 	"time"
@@ -12,6 +13,28 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
+
+func BenchmarkCatInserts(b *testing.B) {
+	teardownTests := tests.SetupTests(b, postgres.Open(tests.ConnectionString))
+	defer teardownTests(b)
+
+	catsService := NewCatsService(tests.DB)
+
+	for i := 0; i < b.N; i++ {
+		cat := &models.Cat{
+			ID:        uuid.New(),
+			Name:      tests.RandString(12),
+			Breed:     tests.RandString(12),
+			Color:     tests.RandString(12),
+			Birthdate: time.Now(),
+			Weight:    rand.Intn(98) + 1,
+		}
+		_, err := catsService.Add(context.Background(), cat)
+		if err != nil {
+			panic(err)
+		}
+	}
+}
 
 func TestNewCatsService(t *testing.T) {
 	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
