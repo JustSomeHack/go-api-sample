@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/JustSomeHack/go-api-sample/models"
-	"github.com/JustSomeHack/go-api-sample/tests"
+	"github.com/JustSomeHack/go-api-sample/internal/models"
+	"github.com/JustSomeHack/go-api-sample/cmd/tests"
 
 	"github.com/google/uuid"
 	"gorm.io/driver/postgres"

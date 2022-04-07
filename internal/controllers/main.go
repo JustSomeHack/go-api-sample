@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/JustSomeHack/go-api-sample/services"
+	"github.com/JustSomeHack/go-api-sample/internal/services"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 

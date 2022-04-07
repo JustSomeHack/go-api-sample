@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/JustSomeHack/go-api-sample/models"
+	"github.com/JustSomeHack/go-api-sample/internal/models"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
-func DogsDelete(c *gin.Context) {
+func CatsDelete(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -18,7 +19,7 @@ func DogsDelete(c *gin.Context) {
 		return
 	}
 
-	if err := dogsService.Delete(c.Request.Context(), id); err != nil {
+	if err := catsService.Delete(c.Request.Context(), id); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": "there was an error",
 		})
@@ -30,22 +31,22 @@ func DogsDelete(c *gin.Context) {
 	})
 }
 
-func DogsCount(c *gin.Context) {
+func CatsCount(c *gin.Context) {
 
 }
 
-func DogsGet(c *gin.Context) {
-	dogs, err := dogsService.Get(c.Request.Context(), nil)
+func CatsGet(c *gin.Context) {
+	cats, err := catsService.Get(c.Request.Context(), nil)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": "there was an error",
 		})
 		return
 	}
-	c.JSON(http.StatusOK, dogs)
+	c.JSON(http.StatusOK, cats)
 }
 
-func DogsGetOne(c *gin.Context) {
+func CatsGetOne(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -54,30 +55,30 @@ func DogsGetOne(c *gin.Context) {
 		return
 	}
 
-	dog, err := dogsService.GetOne(c.Request.Context(), id)
+	cat, err := catsService.GetOne(c.Request.Context(), id)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": "there was an error",
 		})
 		return
 	}
-	c.JSON(http.StatusOK, dog)
+	c.JSON(http.StatusOK, cat)
 }
 
-func DogsPost(c *gin.Context) {
-	dog := new(models.Dog)
-	if c.ShouldBind(dog) != nil {
+func CatsPost(c *gin.Context) {
+	cat := new(models.Cat)
+	if c.ShouldBind(cat) != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message": "Bad request body",
 		})
 		return
 	}
 
-	if dog.ID == uuid.Nil {
-		dog.ID = uuid.New()
+	if cat.ID == uuid.Nil {
+		cat.ID = uuid.New()
 	}
 
-	id, err := dogsService.Add(c.Request.Context(), dog)
+	id, err := catsService.Add(c.Request.Context(), cat)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": "there was an error",
@@ -89,9 +90,9 @@ func DogsPost(c *gin.Context) {
 	})
 }
 
-func DogsPut(c *gin.Context) {
-	dog := new(models.Dog)
-	if c.ShouldBind(&dog) != nil {
+func CatsPut(c *gin.Context) {
+	cat := new(models.Cat)
+	if c.ShouldBind(&cat) != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"message": "Bad request body",
 		})
@@ -106,7 +107,7 @@ func DogsPut(c *gin.Context) {
 		return
 	}
 
-	if err := dogsService.Update(c.Request.Context(), id, dog); err != nil {
+	if err := catsService.Update(c.Request.Context(), id, cat); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": "there was an error",
 		})
