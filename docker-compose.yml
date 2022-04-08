@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  cockroachdb:
+    image: cockroachdb/cockroach:latest
+    command: start-single-node --insecure --advertise-addr=cockroachdb
+    hostname: cockroachdb
+    ports:
+      - "26257:26257"
+      - "8088:8080"
+  go-api-sample:
+    build: .
+    environment:
+      CONNECTION_STRING: "postgresql://root@cockroachdb:26257/defaultdb?sslmode=disable"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - cockroachdb
