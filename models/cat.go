@@ -7,7 +7,7 @@ import (
 )
 
 type Cat struct {
-	ID        uuid.UUID `json:"id"`
+	ID        uuid.UUID `json:"id,omitempty"`
 	Name      string    `json:"name" binding:"required,min=2,max=24" gorm:"check:name <> ''"`
 	Breed     string    `json:"breed" binding:"required,min=2,max=24" gorm:"check:breed <> ''"`
 	Color     string    `json:"color" binding:"required,min=2,max=24" gorm:"check:color <> ''"`
