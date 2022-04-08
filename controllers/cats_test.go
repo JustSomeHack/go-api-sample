@@ -103,12 +103,12 @@ func TestCatsDelete(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		if tt.wantCode != w.Code {
-			t.Errorf("HealthGet() error = %v, wantCode %v", w.Code, tt.wantCode)
+			t.Errorf("CatsDelete() error = %v, wantCode %v", w.Code, tt.wantCode)
 			return
 		}
 
 		if !reflect.DeepEqual(tt.wantResponse, w.Body.String()) {
-			t.Errorf("HealthGet() error = %v, wantCode %v", w.Body.String(), tt.wantResponse)
+			t.Errorf("CatsDelete() error = %v, wantCode %v", w.Body.String(), tt.wantResponse)
 		}
 	}
 }

@@ -362,4 +362,27 @@ paths:
           schema:
             type: string
       summary: Updates a dog by ID
+  /health:
+    get:
+      description: gets the status of the server
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: answer
+          schema:
+            type: string
+        "400":
+          description: ok
+          schema:
+            type: string
+        "404":
+          description: ok
+          schema:
+            type: string
+        "500":
+          description: ok
+          schema:
+            type: string
+      summary: Gets the status of the server
 swagger: "2.0"

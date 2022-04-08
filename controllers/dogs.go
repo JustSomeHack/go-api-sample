@@ -13,7 +13,7 @@ import (
 // @Description deletes a dog
 // @Produce  json
 // @Param        dog_id    path      string     true  "Dog ID"
-// @Success 200 {object} interface{}	"ok"
+// @Success      200   {object}   interface{}	"ok"
 // @Failure      400   {string}   string  "ok"
 // @Failure      404   {string}   string  "ok"
 // @Failure      500   {string}   string  "ok"
@@ -34,7 +34,7 @@ func DogsDelete(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusNoContent, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"deleted": id.String(),
 	})
 }

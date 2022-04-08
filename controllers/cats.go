@@ -33,7 +33,7 @@ func CatsDelete(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusNoContent, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"deleted": id.String(),
 	})
 }
