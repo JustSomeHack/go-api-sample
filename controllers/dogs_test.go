@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -16,6 +17,38 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 )
+
+func BenchmarkDogInserts(b *testing.B) {
+	teardownTests := tests.SetupTests(b, postgres.Open(tests.ConnectionString))
+	defer teardownTests(b)
+
+	router, err := SetupRouter(tests.DB)
+	if err != nil {
+		panic(err)
+	}
+
+	for i := 0; i < b.N; i++ {
+		dog := &models.Dog{
+			ID:        uuid.New(),
+			Name:      tests.RandString(12),
+			Breed:     tests.RandString(12),
+			Color:     tests.RandString(12),
+			Birthdate: time.Now(),
+			Weight:    rand.Intn(98) + 1,
+		}
+
+		data, _ := json.Marshal(dog)
+
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("POST", "/dogs", bytes.NewReader(data))
+		req.Header.Add("Content-type", "application/json")
+		router.ServeHTTP(w, req)
+
+		if w.Code != http.StatusCreated {
+			panic("failed to create dog")
+		}
+	}
+}
 
 func TestDogsDelete(t *testing.T) {
 	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))

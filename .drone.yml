@@ -27,6 +27,7 @@ steps:
   - name: benchmark
     image: golang:latest
     commands:
+      - cd controllers && go test -benchmem -run="^#" -bench . && cd ..
       - cd services && go test -benchmem -run="^#" -bench . && cd ..
 
   - name: build
