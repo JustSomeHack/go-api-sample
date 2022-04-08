@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -11,11 +12,43 @@ import (
 	"testing"
 	"time"
 
-	"github.com/JustSomeHack/go-api-sample/internal/models"
 	"github.com/JustSomeHack/go-api-sample/cmd/tests"
+	"github.com/JustSomeHack/go-api-sample/internal/models"
 	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 )
+
+func BenchmarkDogInserts(b *testing.B) {
+	teardownTests := tests.SetupTests(b, postgres.Open(tests.ConnectionString))
+	defer teardownTests(b)
+
+	router, err := SetupRouter(tests.DB)
+	if err != nil {
+		panic(err)
+	}
+
+	for i := 0; i < b.N; i++ {
+		dog := &models.Dog{
+			ID:        uuid.New(),
+			Name:      tests.RandString(12),
+			Breed:     tests.RandString(12),
+			Color:     tests.RandString(12),
+			Birthdate: time.Now(),
+			Weight:    rand.Intn(98) + 1,
+		}
+
+		data, _ := json.Marshal(dog)
+
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("POST", "/dogs", bytes.NewReader(data))
+		req.Header.Add("Content-type", "application/json")
+		router.ServeHTTP(w, req)
+
+		if w.Code != http.StatusCreated {
+			panic("failed to create dog")
+		}
+	}
+}
 
 func TestDogsDelete(t *testing.T) {
 	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
@@ -70,12 +103,12 @@ func TestDogsDelete(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		if tt.wantCode != w.Code {
-			t.Errorf("HealthGet() error = %v, wantCode %v", w.Code, tt.wantCode)
+			t.Errorf("DogsDelete() error = %v, wantCode %v", w.Code, tt.wantCode)
 			return
 		}
 
 		if !reflect.DeepEqual(tt.wantResponse, w.Body.String()) {
-			t.Errorf("HealthGet() error = %v, wantCode %v", w.Body.String(), tt.wantResponse)
+			t.Errorf("DogsDelete() error = %v, wantCode %v", w.Body.String(), tt.wantResponse)
 		}
 	}
 }
@@ -226,9 +259,42 @@ func TestDogsPost(t *testing.T) {
 					Color:     "Grey",
 					Birthdate: time.Date(2021, 12, 10, 0, 0, 0, 0, time.UTC),
 					Weight:    55,
-				}},
+				},
+			},
 			wantResponse: "created",
 			wantCode:     http.StatusCreated,
+		},
+		{
+			name: "Should not add a dog with empty breed to the database",
+			args: args{
+				method:   "POST",
+				endpoint: "/dogs",
+				body: &models.Dog{
+					Name:      "Spike",
+					Breed:     "",
+					Color:     "Grey",
+					Birthdate: time.Date(2021, 12, 10, 0, 0, 0, 0, time.UTC),
+					Weight:    55,
+				},
+			},
+			wantResponse: "",
+			wantCode:     http.StatusBadRequest,
+		},
+		{
+			name: "Should not add a dog with invalid weight to the database",
+			args: args{
+				method:   "POST",
+				endpoint: "/dogs",
+				body: &models.Dog{
+					Name:      "Spike",
+					Breed:     "Bulldog",
+					Color:     "Grey",
+					Birthdate: time.Date(2021, 12, 10, 0, 0, 0, 0, time.UTC),
+					Weight:    0,
+				},
+			},
+			wantResponse: "",
+			wantCode:     http.StatusBadRequest,
 		},
 	}
 	for _, tt := range tests {
@@ -280,12 +346,13 @@ func TestDogsPut(t *testing.T) {
 				method:   "PUT",
 				endpoint: fmt.Sprintf("/dogs/%s", tests.Dogs[0].ID.String()),
 				body: &models.Dog{
-					Name:      "Nacho",
-					Breed:     "Tabby",
-					Color:     "Orange",
+					Name:      "0111",
+					Breed:     "Pitbull Nix",
+					Color:     "White/Brindle",
 					Birthdate: time.Date(2020, 2, 10, 0, 0, 0, 0, time.UTC),
-					Weight:    20,
-				}},
+					Weight:    65,
+				},
+			},
 			wantResponse: "updated",
 			wantCode:     http.StatusAccepted,
 		},
@@ -295,13 +362,46 @@ func TestDogsPut(t *testing.T) {
 				method:   "PUT",
 				endpoint: fmt.Sprintf("/dogs/%s", "invalid_id_here"),
 				body: &models.Dog{
-					Name:      "Nacho",
-					Breed:     "Tabby",
-					Color:     "Orange",
+					Name:      "0111",
+					Breed:     "Pitbull Nix",
+					Color:     "White/Brindle",
 					Birthdate: time.Date(2020, 2, 10, 0, 0, 0, 0, time.UTC),
-					Weight:    20,
-				}},
+					Weight:    65,
+				},
+			},
 			wantResponse: "invalid",
+			wantCode:     http.StatusBadRequest,
+		},
+		{
+			name: "Should not update a dog with empty color",
+			args: args{
+				method:   "PUT",
+				endpoint: fmt.Sprintf("/dogs/%s", tests.Dogs[0].ID.String()),
+				body: &models.Dog{
+					Name:      "0111",
+					Breed:     "Pitbull Nix",
+					Color:     "",
+					Birthdate: time.Date(2020, 2, 10, 0, 0, 0, 0, time.UTC),
+					Weight:    65,
+				},
+			},
+			wantResponse: "",
+			wantCode:     http.StatusBadRequest,
+		},
+		{
+			name: "Should not update a dog with invalid weight",
+			args: args{
+				method:   "PUT",
+				endpoint: fmt.Sprintf("/dogs/%s", tests.Dogs[0].ID.String()),
+				body: &models.Dog{
+					Name:      "0111",
+					Breed:     "Pitbull Nix",
+					Color:     "White/Brindle",
+					Birthdate: time.Date(2020, 2, 10, 0, 0, 0, 0, time.UTC),
+					Weight:    301,
+				},
+			},
+			wantResponse: "",
 			wantCode:     http.StatusBadRequest,
 		},
 	}

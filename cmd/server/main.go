@@ -5,13 +5,31 @@ import (
 	"os"
 
 	"github.com/JustSomeHack/go-api-sample/internal/controllers"
+	_ "github.com/JustSomeHack/go-api-sample/docs"
 	"github.com/JustSomeHack/go-api-sample/internal/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 var version string = "development"
 
+// @title Go API Sample
+// @version 1.0
+// @description This is a sample API in go
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:8080
+// @BasePath /
 func main() {
 	printVersion()
 
@@ -21,6 +39,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	if err := router.Run(); err != nil {
 		panic(err)
