@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/JustSomeHack/go-api-sample/middlewares"
 	"github.com/JustSomeHack/go-api-sample/services"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -21,6 +22,7 @@ func SetupRouter(db *gorm.DB) (*gin.Engine, error) {
 	config.AllowHeaders = []string{"Content-Type", "Authorization"}
 	config.AllowCredentials = true
 	router.Use(cors.New(config))
+	router.Use(middlewares.ValidateHeader())
 
 	health := router.Group("/health")
 	{
