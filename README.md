@@ -7,15 +7,15 @@ Sample Go API Project
 
 Run all tests `go test -p 1 -coverprofile=coverage.txt ./...`
 
-Run benchmarks against the API `cd internal/controllers && go test -benchmem -run="^#" -bench . && cd ../..`
+Run benchmarks against the API `cd controllers && go test -benchmem -run="^#" -bench . && cd ..`
 
-Run benchmarks against the Database `cd internal/services && go test -benchmem -run="^#" -bench . && cd ../..`
+Run benchmarks against the Database `cd services && go test -benchmem -run="^#" -bench . && cd ..`
 
 Install swagger spec generate tool `go install github.com/swaggo/swag/cmd/swag@latest`
 
-Generate swagger spec `swag init -d cmd/server`
+Generate swagger spec `swag init`
 
-Build API `go build -v -a -o build/docker/go-api-sample cmd/server/main.go`
+Build API `go build -v -a -o build/docker/go-api-sample`
 
 ## Runtime Environment Variables
 
