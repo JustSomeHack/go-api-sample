@@ -38,7 +38,7 @@ steps:
       GOARCH: amd64
     commands:
       - go install github.com/swaggo/swag/cmd/swag@latest
-      - swag init -b cmd/server
+      - swag init -d cmd/server
       - go build -v -a -ldflags "-X main.version=build.${DRONE_BUILD_NUMBER}" -o build/docker/go-api-sample cmd/server/main.go
 
   # - name: docker
