@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/JustSomeHack/go-api-sample/tests"
+	"github.com/JustSomeHack/go-api-sample/cmd/tests"
 	"gorm.io/driver/postgres"
 )
 

@@ -12,13 +12,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/JustSomeHack/go-api-sample/models"
-	"github.com/JustSomeHack/go-api-sample/tests"
+	"github.com/JustSomeHack/go-api-sample/cmd/tests"
+	"github.com/JustSomeHack/go-api-sample/internal/models"
 	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 )
 
-func BenchmarkCatInserts(b *testing.B) {
+func BenchmarkDogInserts(b *testing.B) {
 	teardownTests := tests.SetupTests(b, postgres.Open(tests.ConnectionString))
 	defer teardownTests(b)
 
@@ -28,7 +28,7 @@ func BenchmarkCatInserts(b *testing.B) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		cat := &models.Cat{
+		dog := &models.Dog{
 			ID:        uuid.New(),
 			Name:      tests.RandString(12),
 			Breed:     tests.RandString(12),
@@ -37,20 +37,20 @@ func BenchmarkCatInserts(b *testing.B) {
 			Weight:    rand.Intn(98) + 1,
 		}
 
-		data, _ := json.Marshal(cat)
+		data, _ := json.Marshal(dog)
 
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("POST", "/cats", bytes.NewReader(data))
+		req, _ := http.NewRequest("POST", "/dogs", bytes.NewReader(data))
 		req.Header.Add("Content-type", "application/json")
 		router.ServeHTTP(w, req)
 
 		if w.Code != http.StatusCreated {
-			panic("failed to create cat")
+			panic("failed to create dog")
 		}
 	}
 }
 
-func TestCatsDelete(t *testing.T) {
+func TestDogsDelete(t *testing.T) {
 	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 
@@ -70,19 +70,19 @@ func TestCatsDelete(t *testing.T) {
 		wantCode     int
 	}{
 		{
-			name: "Should delete a cat by ID",
+			name: "Should delete a dog by ID",
 			args: args{
 				method:   "DELETE",
-				endpoint: fmt.Sprintf("/cats/%s", tests.Cats[0].ID.String()),
+				endpoint: fmt.Sprintf("/dogs/%s", tests.Dogs[0].ID.String()),
 			},
-			wantResponse: fmt.Sprintf("{\"deleted\":\"%s\"}", tests.Cats[0].ID.String()),
+			wantResponse: fmt.Sprintf("{\"deleted\":\"%s\"}", tests.Dogs[0].ID.String()),
 			wantCode:     http.StatusOK,
 		},
 		{
 			name: "Should not delete an invalid ID",
 			args: args{
 				method:   "DELETE",
-				endpoint: fmt.Sprintf("/cats/%s", "not_a_valid_id"),
+				endpoint: fmt.Sprintf("/dogs/%s", "not_a_valid_id"),
 			},
 			wantResponse: "{\"message\":\"invalid id\"}",
 			wantCode:     http.StatusBadRequest,
@@ -91,7 +91,7 @@ func TestCatsDelete(t *testing.T) {
 			name: "Should not delete an ID that does not exist",
 			args: args{
 				method:   "DELETE",
-				endpoint: fmt.Sprintf("/cats/%s", uuid.New().String()),
+				endpoint: fmt.Sprintf("/dogs/%s", uuid.New().String()),
 			},
 			wantResponse: "{\"message\":\"there was an error\"}",
 			wantCode:     http.StatusInternalServerError,
@@ -103,17 +103,17 @@ func TestCatsDelete(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		if tt.wantCode != w.Code {
-			t.Errorf("CatsDelete() error = %v, wantCode %v", w.Code, tt.wantCode)
+			t.Errorf("DogsDelete() error = %v, wantCode %v", w.Code, tt.wantCode)
 			return
 		}
 
 		if !reflect.DeepEqual(tt.wantResponse, w.Body.String()) {
-			t.Errorf("CatsDelete() error = %v, wantCode %v", w.Body.String(), tt.wantResponse)
+			t.Errorf("DogsDelete() error = %v, wantCode %v", w.Body.String(), tt.wantResponse)
 		}
 	}
 }
 
-func TestCatsGet(t *testing.T) {
+func TestDogsGet(t *testing.T) {
 	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 
@@ -133,12 +133,12 @@ func TestCatsGet(t *testing.T) {
 		wantCode  int
 	}{
 		{
-			name: "Should all cats",
+			name: "Should all dogs",
 			args: args{
 				method:   "GET",
-				endpoint: "/cats",
+				endpoint: "/dogs",
 			},
-			wantCount: len(tests.Cats),
+			wantCount: len(tests.Dogs),
 			wantCode:  http.StatusOK,
 		},
 	}
@@ -148,24 +148,24 @@ func TestCatsGet(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		if tt.wantCode != w.Code {
-			t.Errorf("CatsGet() error = %v, wantCode %v", w.Code, tt.wantCode)
+			t.Errorf("DogsGet() error = %v, wantCode %v", w.Code, tt.wantCode)
 			return
 		}
 
-		cats := make([]models.Cat, 0)
-		err := json.Unmarshal(w.Body.Bytes(), &cats)
+		dogs := make([]models.Dog, 0)
+		err := json.Unmarshal(w.Body.Bytes(), &dogs)
 		if err != nil {
-			t.Errorf("CatsGet() error = %v, wantCount %v", err, tt.wantCount)
+			t.Errorf("DogsGet() error = %v, wantCount %v", err, tt.wantCount)
 			return
 		}
 
-		if tt.wantCount != len(cats) {
-			t.Errorf("CatsGet() error = %v, wantCount %v", len(cats), tt.wantCount)
+		if tt.wantCount != len(dogs) {
+			t.Errorf("DogsGet() error = %v, wantCount %v", len(dogs), tt.wantCount)
 		}
 	}
 }
 
-func TestCatsGetOne(t *testing.T) {
+func TestDogsGetOne(t *testing.T) {
 	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 
@@ -181,23 +181,23 @@ func TestCatsGetOne(t *testing.T) {
 	tests := []struct {
 		name         string
 		args         args
-		wantResponse *models.Cat
+		wantResponse *models.Dog
 		wantCode     int
 	}{
 		{
-			name: "Should get a cat by ID",
+			name: "Should get a dog by ID",
 			args: args{
 				method:   "GET",
-				endpoint: fmt.Sprintf("/cats/%s", tests.Cats[0].ID.String()),
+				endpoint: fmt.Sprintf("/dogs/%s", tests.Dogs[0].ID.String()),
 			},
-			wantResponse: &tests.Cats[0],
+			wantResponse: &tests.Dogs[0],
 			wantCode:     http.StatusOK,
 		},
 		{
 			name: "Should not get an invalid ID",
 			args: args{
 				method:   "GET",
-				endpoint: fmt.Sprintf("/cats/%s", "not_a_valid_id"),
+				endpoint: fmt.Sprintf("/dogs/%s", "not_a_valid_id"),
 			},
 			wantResponse: nil,
 			wantCode:     http.StatusBadRequest,
@@ -209,26 +209,26 @@ func TestCatsGetOne(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		if tt.wantCode != w.Code {
-			t.Errorf("CatsGetOne() error = %v, wantCode %v", w.Code, tt.wantCode)
+			t.Errorf("DogsGetOne() error = %v, wantCode %v", w.Code, tt.wantCode)
 			return
 		}
 
 		if tt.wantResponse != nil {
-			cat := new(models.Cat)
-			err := json.Unmarshal(w.Body.Bytes(), &cat)
+			dog := new(models.Dog)
+			err := json.Unmarshal(w.Body.Bytes(), &dog)
 			if err != nil {
-				t.Errorf("CatsGetOne() error = %v, wantCount %v", err, tt.wantResponse)
+				t.Errorf("DogsGetOne() error = %v, wantCount %v", err, tt.wantResponse)
 				return
 			}
 
-			if !reflect.DeepEqual(tt.wantResponse.ID, cat.ID) {
-				t.Errorf("CatsGetOne() error = %v, wantCode %v", cat, tt.wantResponse)
+			if !reflect.DeepEqual(tt.wantResponse.ID, dog.ID) {
+				t.Errorf("DogsGetOne() error = %v, wantCode %v", dog, tt.wantResponse)
 			}
 		}
 	}
 }
 
-func TestCatsPost(t *testing.T) {
+func TestDogsPost(t *testing.T) {
 	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 
@@ -240,7 +240,7 @@ func TestCatsPost(t *testing.T) {
 	type args struct {
 		method   string
 		endpoint string
-		body     *models.Cat
+		body     *models.Dog
 	}
 	tests := []struct {
 		name         string
@@ -249,48 +249,48 @@ func TestCatsPost(t *testing.T) {
 		wantCode     int
 	}{
 		{
-			name: "Should add a cat to the database",
+			name: "Should add a dog to the database",
 			args: args{
 				method:   "POST",
-				endpoint: "/cats",
-				body: &models.Cat{
-					Name:      "Fluffy",
-					Breed:     "Bengal",
-					Color:     "Orange",
-					Birthdate: time.Date(2022, 2, 10, 0, 0, 0, 0, time.UTC),
-					Weight:    5,
+				endpoint: "/dogs",
+				body: &models.Dog{
+					Name:      "Spike",
+					Breed:     "Bulldog",
+					Color:     "Grey",
+					Birthdate: time.Date(2021, 12, 10, 0, 0, 0, 0, time.UTC),
+					Weight:    55,
 				},
 			},
 			wantResponse: "created",
 			wantCode:     http.StatusCreated,
 		},
 		{
-			name: "Should not add a cat with empty breed to the database",
+			name: "Should not add a dog with empty breed to the database",
 			args: args{
 				method:   "POST",
-				endpoint: "/cats",
-				body: &models.Cat{
-					Name:      "Fluffy",
+				endpoint: "/dogs",
+				body: &models.Dog{
+					Name:      "Spike",
 					Breed:     "",
-					Color:     "Orange",
-					Birthdate: time.Date(2022, 2, 10, 0, 0, 0, 0, time.UTC),
-					Weight:    5,
+					Color:     "Grey",
+					Birthdate: time.Date(2021, 12, 10, 0, 0, 0, 0, time.UTC),
+					Weight:    55,
 				},
 			},
 			wantResponse: "",
 			wantCode:     http.StatusBadRequest,
 		},
 		{
-			name: "Should not add an invalid cat to the database",
+			name: "Should not add a dog with invalid weight to the database",
 			args: args{
 				method:   "POST",
-				endpoint: "/cats",
-				body: &models.Cat{
-					Name:      "Fluffy",
-					Breed:     "Bengal",
-					Color:     "Orange",
-					Birthdate: time.Date(2022, 2, 10, 0, 0, 0, 0, time.UTC),
-					Weight:    200,
+				endpoint: "/dogs",
+				body: &models.Dog{
+					Name:      "Spike",
+					Breed:     "Bulldog",
+					Color:     "Grey",
+					Birthdate: time.Date(2021, 12, 10, 0, 0, 0, 0, time.UTC),
+					Weight:    0,
 				},
 			},
 			wantResponse: "",
@@ -300,7 +300,7 @@ func TestCatsPost(t *testing.T) {
 	for _, tt := range tests {
 		data, err := json.Marshal(tt.args.body)
 		if err != nil {
-			t.Errorf("CatsPost() unable to marshal %v", tt.args.body)
+			t.Errorf("DogsPost() unable to marshal %v", tt.args.body)
 			return
 		}
 
@@ -310,17 +310,17 @@ func TestCatsPost(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		if tt.wantCode != w.Code {
-			t.Errorf("CatsPost() error = %v, wantCode %v", w.Code, tt.wantCode)
+			t.Errorf("DogsPost() error = %v, wantCode %v", w.Code, tt.wantCode)
 			return
 		}
 
 		if !strings.Contains(w.Body.String(), tt.wantResponse) {
-			t.Errorf("CatsPost() error = %v, wantCode %v", w.Body.String(), tt.wantResponse)
+			t.Errorf("DogsPost() error = %v, wantCode %v", w.Body.String(), tt.wantResponse)
 		}
 	}
 }
 
-func TestCatsPut(t *testing.T) {
+func TestDogsPut(t *testing.T) {
 	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 
@@ -332,7 +332,7 @@ func TestCatsPut(t *testing.T) {
 	type args struct {
 		method   string
 		endpoint string
-		body     *models.Cat
+		body     *models.Dog
 	}
 	tests := []struct {
 		name         string
@@ -341,16 +341,16 @@ func TestCatsPut(t *testing.T) {
 		wantCode     int
 	}{
 		{
-			name: "Should update a cat",
+			name: "Should update a dog",
 			args: args{
 				method:   "PUT",
-				endpoint: fmt.Sprintf("/cats/%s", tests.Cats[0].ID.String()),
-				body: &models.Cat{
-					Name:      "Nacho",
-					Breed:     "Tabby",
-					Color:     "Orange",
+				endpoint: fmt.Sprintf("/dogs/%s", tests.Dogs[0].ID.String()),
+				body: &models.Dog{
+					Name:      "0111",
+					Breed:     "Pitbull Nix",
+					Color:     "White/Brindle",
 					Birthdate: time.Date(2020, 2, 10, 0, 0, 0, 0, time.UTC),
-					Weight:    20,
+					Weight:    65,
 				},
 			},
 			wantResponse: "updated",
@@ -360,45 +360,45 @@ func TestCatsPut(t *testing.T) {
 			name: "Should not update an invalid id",
 			args: args{
 				method:   "PUT",
-				endpoint: fmt.Sprintf("/cats/%s", "invalid_id_here"),
-				body: &models.Cat{
-					Name:      "Nacho",
-					Breed:     "Tabby",
-					Color:     "Orange",
+				endpoint: fmt.Sprintf("/dogs/%s", "invalid_id_here"),
+				body: &models.Dog{
+					Name:      "0111",
+					Breed:     "Pitbull Nix",
+					Color:     "White/Brindle",
 					Birthdate: time.Date(2020, 2, 10, 0, 0, 0, 0, time.UTC),
-					Weight:    20,
+					Weight:    65,
 				},
 			},
 			wantResponse: "invalid",
 			wantCode:     http.StatusBadRequest,
 		},
 		{
-			name: "Should not update a cat with empty color",
+			name: "Should not update a dog with empty color",
 			args: args{
 				method:   "PUT",
-				endpoint: fmt.Sprintf("/cats/%s", tests.Cats[0].ID.String()),
-				body: &models.Cat{
-					Name:      "Nacho",
-					Breed:     "Tabby",
+				endpoint: fmt.Sprintf("/dogs/%s", tests.Dogs[0].ID.String()),
+				body: &models.Dog{
+					Name:      "0111",
+					Breed:     "Pitbull Nix",
 					Color:     "",
 					Birthdate: time.Date(2020, 2, 10, 0, 0, 0, 0, time.UTC),
-					Weight:    20,
+					Weight:    65,
 				},
 			},
 			wantResponse: "",
 			wantCode:     http.StatusBadRequest,
 		},
 		{
-			name: "Should not update a cat with empty color",
+			name: "Should not update a dog with invalid weight",
 			args: args{
 				method:   "PUT",
-				endpoint: fmt.Sprintf("/cats/%s", tests.Cats[0].ID.String()),
-				body: &models.Cat{
-					Name:      "Nacho",
-					Breed:     "Tabby",
-					Color:     "Orange",
+				endpoint: fmt.Sprintf("/dogs/%s", tests.Dogs[0].ID.String()),
+				body: &models.Dog{
+					Name:      "0111",
+					Breed:     "Pitbull Nix",
+					Color:     "White/Brindle",
 					Birthdate: time.Date(2020, 2, 10, 0, 0, 0, 0, time.UTC),
-					Weight:    200,
+					Weight:    301,
 				},
 			},
 			wantResponse: "",
@@ -408,7 +408,7 @@ func TestCatsPut(t *testing.T) {
 	for _, tt := range tests {
 		data, err := json.Marshal(tt.args.body)
 		if err != nil {
-			t.Errorf("CatsPut() unable to marshal %v", tt.args.body)
+			t.Errorf("DogsPut() unable to marshal %v", tt.args.body)
 			return
 		}
 
@@ -418,12 +418,12 @@ func TestCatsPut(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		if tt.wantCode != w.Code {
-			t.Errorf("CatsPut() error = %v, wantCode %v", w.Code, tt.wantCode)
+			t.Errorf("DogsPut() error = %v, wantCode %v", w.Code, tt.wantCode)
 			return
 		}
 
 		if !strings.Contains(w.Body.String(), tt.wantResponse) {
-			t.Errorf("CatsPut() error = %v, wantCode %v", w.Body.String(), tt.wantResponse)
+			t.Errorf("DogsPut() error = %v, wantCode %v", w.Body.String(), tt.wantResponse)
 		}
 	}
 }

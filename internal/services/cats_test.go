@@ -7,37 +7,36 @@ import (
 	"testing"
 	"time"
 
-	"github.com/JustSomeHack/go-api-sample/models"
-	"github.com/JustSomeHack/go-api-sample/tests"
-
+	"github.com/JustSomeHack/go-api-sample/internal/models"
+	"github.com/JustSomeHack/go-api-sample/cmd/tests"
 	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func BenchmarkDogInserts(b *testing.B) {
+func BenchmarkCatInserts(b *testing.B) {
 	teardownTests := tests.SetupTests(b, postgres.Open(tests.ConnectionString))
 	defer teardownTests(b)
 
-	dogsService := NewDogsService(tests.DB)
+	catsService := NewCatsService(tests.DB)
 
 	for i := 0; i < b.N; i++ {
-		dog := &models.Dog{
+		cat := &models.Cat{
 			ID:        uuid.New(),
 			Name:      tests.RandString(12),
 			Breed:     tests.RandString(12),
 			Color:     tests.RandString(12),
 			Birthdate: time.Now(),
-			Weight:    rand.Intn(298) + 1,
+			Weight:    rand.Intn(98) + 1,
 		}
-		_, err := dogsService.Add(context.Background(), dog)
+		_, err := catsService.Add(context.Background(), cat)
 		if err != nil {
 			panic(err)
 		}
 	}
 }
 
-func TestNewDogsService(t *testing.T) {
+func TestNewCatsService(t *testing.T) {
 	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 
@@ -47,35 +46,35 @@ func TestNewDogsService(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want DogsService
+		want CatsService
 	}{
 		{
 			name: "Should get valid interface back",
 			args: args{db: tests.DB},
-			want: &dogsService{db: tests.DB},
+			want: &catsService{db: tests.DB},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewDogsService(tt.args.db); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewDogsService() = %v, want %v", got, tt.want)
+			if got := NewCatsService(tt.args.db); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewCatsService() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func Test_dogsService_Add(t *testing.T) {
+func Test_catsService_Add(t *testing.T) {
 	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 
-	dogID := uuid.New()
+	catID := uuid.New()
 
 	type fields struct {
 		db *gorm.DB
 	}
 	type args struct {
 		ctx context.Context
-		dog *models.Dog
+		cat *models.Cat
 	}
 	tests := []struct {
 		name    string
@@ -85,28 +84,28 @@ func Test_dogsService_Add(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:   "Should add a dog to the database",
+			name:   "Should add a cat to the database",
 			fields: fields{db: tests.DB},
 			args: args{
 				ctx: context.Background(),
-				dog: &models.Dog{
-					ID:        dogID,
-					Name:      "Snowball",
-					Breed:     "Sniba Inu",
-					Color:     "Cream",
+				cat: &models.Cat{
+					ID:        catID,
+					Name:      "Nacho",
+					Breed:     "Tabby",
+					Color:     "Orange",
 					Birthdate: time.Now(),
-					Weight:    22,
+					Weight:    17,
 				},
 			},
-			want:    &dogID,
+			want:    &catID,
 			wantErr: false,
 		},
 		{
-			name:   "Should not be able to add empty dog",
+			name:   "Should not be able to add empty cat",
 			fields: fields{db: tests.DB},
 			args: args{
 				ctx: context.Background(),
-				dog: &models.Dog{
+				cat: &models.Cat{
 					ID: uuid.New(),
 				},
 			},
@@ -116,22 +115,22 @@ func Test_dogsService_Add(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &dogsService{
+			s := &catsService{
 				db: tt.fields.db,
 			}
-			got, err := s.Add(tt.args.ctx, tt.args.dog)
+			got, err := s.Add(tt.args.ctx, tt.args.cat)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("dogsService.Add() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("catsService.Add() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("dogsService.Add() = %v, want %v", got, tt.want)
+				t.Errorf("catsService.Add() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func Test_dogsService_Delete(t *testing.T) {
+func Test_catsService_Delete(t *testing.T) {
 	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 
@@ -149,9 +148,9 @@ func Test_dogsService_Delete(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "Should delete dog by ID",
+			name:    "Should delete cat by ID",
 			fields:  fields{db: tests.DB},
-			args:    args{ctx: context.Background(), id: tests.Dogs[0].ID},
+			args:    args{ctx: context.Background(), id: tests.Cats[0].ID},
 			wantErr: false,
 		},
 		{
@@ -163,17 +162,17 @@ func Test_dogsService_Delete(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &dogsService{
+			s := &catsService{
 				db: tt.fields.db,
 			}
 			if err := s.Delete(tt.args.ctx, tt.args.id); (err != nil) != tt.wantErr {
-				t.Errorf("dogsService.Delete() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("catsService.Delete() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
 }
 
-func Test_dogsService_Get(t *testing.T) {
+func Test_catsService_Get(t *testing.T) {
 	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 
@@ -192,31 +191,31 @@ func Test_dogsService_Get(t *testing.T) {
 		wantErr   bool
 	}{
 		{
-			name:      "Should get all the dogs",
+			name:      "Should get all the cats",
 			fields:    fields{db: tests.DB},
 			args:      args{ctx: context.Background(), filter: nil},
-			wantCount: 4,
+			wantCount: 3,
 			wantErr:   false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &dogsService{
+			s := &catsService{
 				db: tt.fields.db,
 			}
 			got, err := s.Get(tt.args.ctx, tt.args.filter)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("dogsService.Get() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("catsService.Get() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if len(got) != tt.wantCount {
-				t.Errorf("dogsService.Get() = %v, want %v", len(got), tt.wantCount)
+				t.Errorf("catsService.Get() = %v, want %v", len(got), tt.wantCount)
 			}
 		})
 	}
 }
 
-func Test_dogsService_GetOne(t *testing.T) {
+func Test_catsService_GetOne(t *testing.T) {
 	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 
@@ -231,18 +230,18 @@ func Test_dogsService_GetOne(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *models.Dog
+		want    *models.Cat
 		wantErr bool
 	}{
 		{
-			name:    "Should get dog by ID",
+			name:    "Should get cat by ID",
 			fields:  fields{db: tests.DB},
-			args:    args{ctx: context.Background(), id: tests.Dogs[0].ID},
-			want:    &tests.Dogs[0],
+			args:    args{ctx: context.Background(), id: tests.Cats[0].ID},
+			want:    &tests.Cats[0],
 			wantErr: false,
 		},
 		{
-			name:    "Should not get dog that does not exist",
+			name:    "Should not get cat that does not exist",
 			fields:  fields{db: tests.DB},
 			args:    args{ctx: context.Background(), id: uuid.New()},
 			want:    nil,
@@ -251,25 +250,25 @@ func Test_dogsService_GetOne(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &dogsService{
+			s := &catsService{
 				db: tt.fields.db,
 			}
 			got, err := s.GetOne(tt.args.ctx, tt.args.id)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("dogsService.GetOne() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("catsService.GetOne() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 
 			if !tt.wantErr {
 				if !reflect.DeepEqual(got.ID, tt.want.ID) {
-					t.Errorf("dogsService.GetOne() = %v, want %v", got, tt.want)
+					t.Errorf("catsService.GetOne() = %v, want %v", got, tt.want)
 				}
 			}
 		})
 	}
 }
 
-func Test_dogsService_Update(t *testing.T) {
+func Test_catsService_Update(t *testing.T) {
 	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 
@@ -279,7 +278,7 @@ func Test_dogsService_Update(t *testing.T) {
 	type args struct {
 		ctx context.Context
 		id  uuid.UUID
-		dog *models.Dog
+		cat *models.Cat
 	}
 	tests := []struct {
 		name    string
@@ -288,37 +287,37 @@ func Test_dogsService_Update(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:   "Should update a dog by ID",
+			name:   "Should update a cat by ID",
 			fields: fields{db: tests.DB},
-			args: args{ctx: context.Background(), id: tests.Dogs[0].ID, dog: &models.Dog{
-				Name:      "Snowball",
-				Breed:     "Shiba Inu",
-				Color:     "Cream",
-				Birthdate: time.Date(2020, 6, 12, 0, 0, 0, 0, time.UTC),
-				Weight:    22,
+			args: args{ctx: context.Background(), id: tests.Cats[0].ID, cat: &models.Cat{
+				Name:      "Nacho",
+				Breed:     "Tabby",
+				Color:     "Orange",
+				Birthdate: time.Date(2020, 2, 10, 0, 0, 0, 0, time.UTC),
+				Weight:    19,
 			}},
 			wantErr: false,
 		},
 		{
-			name:   "Should not update a dog with no valid ID",
+			name:   "Should not update a cat with no valid ID",
 			fields: fields{db: tests.DB},
-			args: args{ctx: context.Background(), id: uuid.New(), dog: &models.Dog{
-				Name:      "Snowball",
-				Breed:     "Shiba Inu",
-				Color:     "Cream",
-				Birthdate: time.Date(2020, 6, 12, 0, 0, 0, 0, time.UTC),
-				Weight:    22,
+			args: args{ctx: context.Background(), id: uuid.New(), cat: &models.Cat{
+				Name:      "Nacho",
+				Breed:     "Tabby",
+				Color:     "Orange",
+				Birthdate: time.Date(2020, 2, 10, 0, 0, 0, 0, time.UTC),
+				Weight:    19,
 			}},
 			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &dogsService{
+			s := &catsService{
 				db: tt.fields.db,
 			}
-			if err := s.Update(tt.args.ctx, tt.args.id, tt.args.dog); (err != nil) != tt.wantErr {
-				t.Errorf("dogsService.Update() error = %v, wantErr %v", err, tt.wantErr)
+			if err := s.Update(tt.args.ctx, tt.args.id, tt.args.cat); (err != nil) != tt.wantErr {
+				t.Errorf("catsService.Update() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

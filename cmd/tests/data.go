@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/JustSomeHack/go-api-sample/models"
+	"github.com/JustSomeHack/go-api-sample/internal/models"
 	"gorm.io/gorm"
 )
 
@@ -46,7 +46,7 @@ func SetupTests(t testing.TB, dialector gorm.Dialector) func(t testing.TB) {
 
 func LoadCats() {
 	Cats = make([]models.Cat, 0)
-	data, err := os.ReadFile("../tests/cats.json")
+	data, err := os.ReadFile("../../cmd/tests/cats.json")
 	if err != nil {
 		panic(err)
 	}
@@ -58,7 +58,7 @@ func LoadCats() {
 
 func LoadDogs() {
 	Dogs = make([]models.Dog, 0)
-	data, err := os.ReadFile("../tests/dogs.json")
+	data, err := os.ReadFile("../../cmd/tests/dogs.json")
 	if err != nil {
 		panic(err)
 	}
