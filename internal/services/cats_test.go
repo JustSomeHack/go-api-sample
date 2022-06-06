@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/JustSomeHack/go-api-sample/internal/models"
-	"github.com/JustSomeHack/go-api-sample/cmd/tests"
 	"github.com/google/uuid"
+	"github.com/one-byte-data/go-api-sample/cmd/tests"
+	"github.com/one-byte-data/go-api-sample/internal/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

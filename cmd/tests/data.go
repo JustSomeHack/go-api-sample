@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/JustSomeHack/go-api-sample/internal/models"
+	"github.com/one-byte-data/go-api-sample/internal/models"
 	"gorm.io/gorm"
 )
 

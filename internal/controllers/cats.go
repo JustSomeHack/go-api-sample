@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/JustSomeHack/go-api-sample/internal/models"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/one-byte-data/go-api-sample/internal/models"
 )
 
 // @Summary Deletes a cat by ID

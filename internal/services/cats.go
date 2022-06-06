@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/JustSomeHack/go-api-sample/internal/models"
+	"github.com/one-byte-data/go-api-sample/internal/models"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"

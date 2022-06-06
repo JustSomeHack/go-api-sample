@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	_ "github.com/JustSomeHack/go-api-sample/docs"
-	"github.com/JustSomeHack/go-api-sample/internal/controllers"
-	"github.com/JustSomeHack/go-api-sample/internal/models"
+	_ "github.com/one-byte-data/go-api-sample/docs"
+	"github.com/one-byte-data/go-api-sample/internal/controllers"
+	"github.com/one-byte-data/go-api-sample/internal/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 

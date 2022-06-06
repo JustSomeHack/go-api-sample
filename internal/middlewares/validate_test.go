@@ -5,9 +5,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/JustSomeHack/go-api-sample/cmd/tests"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/one-byte-data/go-api-sample/cmd/tests"
 	"gorm.io/driver/postgres"
 )
 

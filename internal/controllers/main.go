@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"github.com/JustSomeHack/go-api-sample/internal/middlewares"
-	"github.com/JustSomeHack/go-api-sample/internal/services"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/one-byte-data/go-api-sample/internal/middlewares"
+	"github.com/one-byte-data/go-api-sample/internal/services"
 
 	"gorm.io/gorm"
 )
