@@ -1,16 +1,22 @@
 package controllers
 
 import (
+	"flag"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"regexp"
 	"testing"
 
 	"github.com/one-byte-data/go-api-sample/cmd/tests"
 	"gorm.io/driver/postgres"
 )
 
-func TestHealthGet(t *testing.T) {
+func TestIntegrationHealthGet(t *testing.T) {
+	if m := flag.Lookup("test.run").Value.String(); m == "" || !regexp.MustCompile(m).MatchString(t.Name()) {
+		t.Skip("skipping as execution was not requested explicitly using go test -run")
+	}
+
 	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 

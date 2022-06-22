@@ -1,8 +1,10 @@
 package middlewares
 
 import (
+	"flag"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"testing"
 
 	"github.com/gin-contrib/cors"
@@ -11,7 +13,11 @@ import (
 	"gorm.io/driver/postgres"
 )
 
-func TestValidateHeader(t *testing.T) {
+func TestIntegrationValidateHeader(t *testing.T) {
+	if m := flag.Lookup("test.run").Value.String(); m == "" || !regexp.MustCompile(m).MatchString(t.Name()) {
+		t.Skip("skipping as execution was not requested explicitly using go test -run")
+	}
+	
 	teardownTests := tests.SetupTests(t, postgres.Open(tests.ConnectionString))
 	defer teardownTests(t)
 
