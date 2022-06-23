@@ -14,11 +14,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/uuid"
 	"github.com/one-byte-data/go-api-sample/cmd/tests"
 	"github.com/one-byte-data/go-api-sample/internal/models"
 	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func BenchmarkCatInserts(b *testing.B) {
@@ -54,18 +55,64 @@ func BenchmarkCatInserts(b *testing.B) {
 }
 
 func TestCatsDelete(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+
+	gdb, err := gorm.Open(postgres.Dialector{
+		Config: &postgres.Config{Conn: db},
+	})
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+
+	router, err := SetupRouter(gdb)
+	if err != nil {
+		panic(err)
+	}
+
+	testID := uuid.New()
+
 	type args struct {
-		c *gin.Context
+		method   string
+		endpoint string
 	}
 	tests := []struct {
-		name string
-		args args
+		name         string
+		args         args
+		wantResponse string
+		wantCode     int
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Should delete a cat by ID",
+			args: args{
+				method:   "DELETE",
+				endpoint: fmt.Sprintf("/cats/%s", testID.String()),
+			},
+			wantResponse: fmt.Sprintf("{\"deleted\":\"%s\"}", testID.String()),
+			wantCode:     http.StatusOK,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			CatsDelete(tt.args.c)
+			mock.ExpectBegin()
+			mock.ExpectExec(`DELETE FROM "cats" WHERE`).WithArgs(sqlmock.AnyArg()).WillReturnResult(sqlmock.NewResult(1, 1))
+			mock.ExpectCommit()
+
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest(tt.args.method, tt.args.endpoint, nil)
+			router.ServeHTTP(w, req)
+
+			if tt.wantCode != w.Code {
+				t.Errorf("CatsDelete() error = %v, wantCode %v", w.Code, tt.wantCode)
+				return
+			}
+
+			if !reflect.DeepEqual(tt.wantResponse, w.Body.String()) {
+				t.Errorf("CatsDelete() error = %v, wantCode %v", w.Body.String(), tt.wantResponse)
+			}
 		})
 	}
 }
