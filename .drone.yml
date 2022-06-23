@@ -19,10 +19,15 @@ services:
       - cockroach start-single-node --insecure --advertise-addr=cockroachdb
     
 steps:
-  - name: test
+  - name: unit-test
     image: golang:latest
     commands:
-      - go test -p 1 -coverprofile=coverage.txt ./...
+      - go test -coverprofile=unit-coverage.txt ./...
+
+  - name: integration-test
+    image: golang:latest
+    commands:
+      - go test -p 1 -coverprofile=integration-coverage.txt ./... -run ^TestIntegration$
 
   - name: benchmark
     image: golang:latest
